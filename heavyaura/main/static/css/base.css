@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Carrois+Gothic&display=swap");
 
+:root {
+  --box-shadow: 0px 1 px 1px rgba(0, 0, 0, 0.363);
+}
+
 body {
   font-family: "Carrois Gothic", sens-serif;
   font-size: 18px;
@@ -44,4 +48,172 @@ h5 {
   justify-content: space-between;
   padding: 0 15px;
   align-items: center;
+}
+
+.container {
+  box-sizing: border-box;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.header {
+  height: 80px;
+  background-color: #fff;
+  box-shadow: var(--box-shadow);
+}
+
+.header-list {
+  text-transform: uppercase;
+}
+
+.heavy-logo {
+  position: fixed;
+  top: 0.5%;
+  left: 44.5%;
+}
+
+.home {
+  align-items: center;
+}
+
+.home-title {
+  margin-top: 210px;
+  margin-bottom: 50px;
+}
+
+.home-card {
+  width: 200;
+  height: 325px;
+  border: 1px solid #00000027;
+  border-radius: 5 px;
+  transition: all 0.5s ease;
+  background-color: white;
+}
+
+.home-card:hover {
+  border: 1px solid black;
+}
+
+.title-card {
+  max-width: 185px;
+  margin-top: 20px;
+  min-height: 70px;
+}
+
+.card-img {
+  width: 195px;
+  height: 195px;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: -10px;
+}
+
+.home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 50px;
+  border: 1px solid #00000027;
+  border-radius: 5px;
+  background-image: url(../img/btnh.png);
+  transition: all 0.4s ease;
+  z-index: 2;
+}
+
+.home-btn:hover {
+  border: 1px solid black;
+}
+
+.frame1 {
+  position: absolute;
+  right: -0.5%;
+  bottom: 60%;
+  z-index: -1;
+}
+
+.frame2 {
+  position: absolute;
+  left: -0.5%;
+  bottom: 60%;
+  z-index: -1;
+}
+
+.frame3 {
+  position: absolute;
+  left: 0%;
+  top: 75%;
+  z-index: -1;
+}
+
+.frame4 {
+  position: absolute;
+  right: 0%;
+  bottom: 60%;
+  top: 75%;
+  z-index: -1;
+}
+
+.logogothic {
+  position: absolute;
+  top: 5%;
+  left: 40%;
+  width: 400px;
+  height: 300px;
+}
+
+.subtitlee {
+  position: absolute;
+  bottom: 0%;
+  left: 45%;
+}
+
+.detail-image {
+  width: 650px;
+  height: 650px;
+}
+.detail-product {
+  margin-top: 80px;
+}
+
+.detail-description {
+  margin-left: 40px;
+  margin-top: 40px;
+}
+
+.detail-description p {
+  margin-top: 30px;
+  max-width: 700px;
+}
+
+.detail-description h2 span {
+  font-size: 56px;
+}
+
+.card-discount {
+  margin-top: -10px;
+  font-weight: 600;
+}
+
+.line {
+  opacity: 0.7;
+  text-decoration: line-through;
+  font-weight: 300;
+}
+
+.cart-btn {
+  width: 180px;
+  height: 50px;
+  border: 1px solid #00000027;
+  border-radius: 5px;
+  transition: all 0.4s ease;
+  z-index: 2;
+  margin-top: 20px;
+}
+
+.cart-btn:hover {
+  border: 1px solid black;
 }
