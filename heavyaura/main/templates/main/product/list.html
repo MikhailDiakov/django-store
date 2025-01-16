@@ -10,7 +10,7 @@
       <li {% if not category %} class="selected" {% endif %}>
         <a href="{% url "main:product_list" %}">All</a>
       </li>
-      {% for categ in categoreis  %}
+      {% for categ in categories  %}
         <li {% if category.slug == categ.slug %} class="selected" {% endif %}>
             <a href="{{ categ.get_absolute_url }}">{{ categ.name }}</a>
         </li>
