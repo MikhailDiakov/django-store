@@ -23,11 +23,14 @@
     {% else %}
     <p class="price">$ {{ product.price }}</p>
     {% endif %}
-    <a
-      href="#"
-      class="cart-btn d-flex align-items-center justify-content-center"
-      >Add to cart</a
+    <form
+      action="{% url 'cart:cart_add' product.id %}"
+      class="addcart"
+      method="post"
     >
+      <div class="cart-form">{{ cart_product_form }} {% csrf_token %}</div>
+      <input type="submit" class="add-to-cart-btn" value="Add to cart" />
+    </form>
   </div>
 </div>
 {% endblock %}
