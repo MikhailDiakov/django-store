@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
 from django.core.paginator import Paginator
+from cart.forms import CartAddProduct
 
 
 def popular_list(request):
@@ -10,7 +11,12 @@ def popular_list(request):
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, available=True)
-    return render(request, "main/product/detail.html", {"product": product})
+    cart_product_form = CartAddProduct()
+    return render(
+        request,
+        "main/product/detail.html",
+        {"product": product, "cart_product_form": cart_product_form},
+    )
 
 
 def product_list(request, category_slug=None):

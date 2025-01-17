@@ -11,15 +11,14 @@ class Cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
 
-    def add(self, product, quantity=1, ovverride_quantity=False):
+    def add(self, product, quantity=1, override_quantity=False):
         product_id = str(product.id)
         if product_id not in self.cart:
             self.cart[product_id] = {"quantity": 0, "price": str(product.price)}
-
-        if ovverride_quantity:
-            self.card[product_id]["quantity"] = quantity
+        if override_quantity:
+            self.cart[product_id]["quantity"] = quantity
         else:
-            self.card[product_id]["quantity"] += quantity
+            self.cart[product_id]["quantity"] += quantity
         self.save()
 
     def save(self):
@@ -47,3 +46,14 @@ class Cart:
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
+
+    def get_total_price(self):
+        total = sum(
+            (
+                Decimal(item["price"])
+                - (Decimal(item["price"]) * Decimal(item["product"].discount / 100))
+            )
+            * item["quantity"]
+            for item in self.cart.values()
+        )
+        return format(total, ".2f")
