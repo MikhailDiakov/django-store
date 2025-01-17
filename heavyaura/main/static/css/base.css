@@ -319,7 +319,7 @@ h5 {
 .cart-card {
   display: flex;
   gap: 15px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 570px;
   height: 150px;
@@ -328,6 +328,8 @@ h5 {
   margin-bottom: 10px;
   background-image: url(../img/cfr2.png);
   background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
 }
 
 .cart-card:nth-child(even) {
@@ -336,9 +338,11 @@ h5 {
 }
 
 .cart-card-img img {
-  width: 125px;
-  height: 125px;
+  width: 115px;
+  height: 115px;
   border: 1px solid #00000042;
+  margin: 10px;
+  object-fit: cover;
 }
 
 .cart-card-name {
@@ -379,6 +383,11 @@ h5 {
 
 .cart-price {
   font-size: 16px;
+  width: 80px; /* Установил фиксированную ширину для цены */
+  text-align: right; /* Выравнивание текста по правому краю */
+  overflow: hidden; /* Обрезка длинного текста */
+  white-space: nowrap; /* Ограничение текста одной строкой */
+  text-overflow: ellipsis; /* Добавление троеточия для переполненного текста */
 }
 
 .total {
