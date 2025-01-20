@@ -346,7 +346,7 @@ h5 {
 }
 
 .cart-card-name {
-  width: 180px;
+  width: 160px;
 }
 
 .remove-btn {
@@ -383,11 +383,11 @@ h5 {
 
 .cart-price {
   font-size: 16px;
-  width: 80px; /* Установил фиксированную ширину для цены */
-  text-align: right; /* Выравнивание текста по правому краю */
-  overflow: hidden; /* Обрезка длинного текста */
-  white-space: nowrap; /* Ограничение текста одной строкой */
-  text-overflow: ellipsis; /* Добавление троеточия для переполненного текста */
+  width: 80px;
+  text-align: right;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .total {
@@ -410,4 +410,15 @@ h5 {
 
 .add-to-cart-btn:hover {
   border: 1px solid #000;
+}
+
+@font-face {
+  font-family: "Blackblade";
+  src: url(../fonts/Blackblade.ttf);
+}
+
+span {
+  font-family: "Blackblade", serif;
+  font-size: 48px;
+  line-height: 0;
 }
