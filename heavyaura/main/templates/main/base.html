@@ -34,10 +34,14 @@
           <a href="{% url 'cart:cart_detail' %}"
             ><img src="{% static 'img/grob.png' %}" class="grob" alt=""
           /></a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'users:profile' %}">PROFILE</a>
+          {% else %}
           <a href="{% url 'users:login' %}" class="m-2">LOGIN</a>
+          {% endif %}
           <p class="cart-quantity">
+            {% with cart_quantity=cart|length %} {% if cart_quantity > 0 %}
             <!-- prettier-ignore -->
-            {% with cart_quantity=cart|length %} {% if cart_quantity > 0 %} 
             {{ cart_quantity }} {% else %} 0 {% endif %} {% endwith %}
           </p>
         </div>

@@ -42,14 +42,14 @@ def registration(request):
 def profile(request):
     if request.method == "POST":
         form = ProfileForm(
-            data=request.POST, isinstance=request.user, files=request.FILES
+            data=request.POST, instance=request.user, files=request.FILES
         )
         if form.is_valid():
             form.save()
             messages.success(request, " Profile was changed ")
             return HttpResponseRedirect(reverse("user:profile"))
     else:
-        form = ProfileForm(isinstance=request.user)
+        form = ProfileForm(instance=request.user)
 
     orders = (
         Order.objects.filter(user=request.user)
