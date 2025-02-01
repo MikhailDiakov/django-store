@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from django.conf import settings
 from main.models import Product
 
@@ -38,7 +38,26 @@ class Cart:
             cart[str(product.id)]["product"] = product
         for item in cart.values():
             item["price"] = Decimal(item["price"])
-            item["total_price"] = item["price"] * item["quantity"]
+            item["total_price"] = (item["price"] * item["quantity"]).quantize(
+                Decimal("0.01"), rounding=ROUND_DOWN
+            )
+
+            product = item.get("product")
+            discount_percentage = (
+                Decimal(product.discount)
+                if product and hasattr(product, "discount")
+                else Decimal(0)
+            )
+
+            item["discount"] = discount_percentage
+
+            item["discounted_price"] = (
+                item["price"] * (1 - discount_percentage / 100)
+            ) * item["quantity"]
+            item["discounted_price"] = item["discounted_price"].quantize(
+                Decimal("0.01"), rounding=ROUND_DOWN
+            )
+
             yield item
 
     def __len__(self):

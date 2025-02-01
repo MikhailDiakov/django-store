@@ -84,16 +84,22 @@
       {% csrf_token %}
     </form>
   </div>
-  <div class="checkout">
+  <div class="checkout bg-white p-4 mb-4 mx-2">
     <h1>Checkout</h1>
     <div class="order-info">
       {% for item in cart %}
       <li>
+        <!-- prettier-ignore -->
         {{ item.quantity }}x {{ item.product.name }}
-        <p>$ {{ item.total_price }}</p>
+        <p></p>
+        {% if item.total_price != item.discounted_price %}
+        <p class="line">$ {{ item.total_price }}</p>
+        {% endif %}
+        <p class="discounted-price">$ {{ item.discounted_price }}</p>
       </li>
-      <p>Total: $ {{ cart.get_total_price }}</p>
+      <p></p>
       {% endfor %}
+      <p>Total: $ {{ cart.get_total_price }}</p>
     </div>
   </div>
 </div>

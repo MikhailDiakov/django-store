@@ -54,6 +54,16 @@
             <div class="btns d-flex gap-4 mt-4">
                 <button type="submit" class="profile-btn">Save</button>
                 <a class="profile-btn" href="{% url 'user:logout' %}">Logout</a>
+                {% if messages %}
+                <div class="alert-messages">
+                  {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                
             </div>
             
         </form>

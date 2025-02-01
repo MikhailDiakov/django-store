@@ -5,7 +5,7 @@ from cart.forms import CartAddProduct
 
 
 def popular_list(request):
-    products = Product.objects.filter(available=True)[:3]
+    products = Product.objects.filter(available=True).order_by("-price")[:3]
     return render(request, "main/index/index.html", {"products": products})
 
 

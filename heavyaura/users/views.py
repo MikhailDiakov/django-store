@@ -18,7 +18,12 @@ def login(request):
 
             if user:
                 auth.login(request, user)
-                return HttpResponseRedirect(reverse("main:product"))
+                return HttpResponseRedirect(reverse("main:product_list"))
+            else:
+                messages.error(request, "Invalid username or password")
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
     else:
         form = UserLoginForm()
     return render(request, "users/login.html", {"form": form})
@@ -33,9 +38,15 @@ def registration(request):
             auth.login(request, user)
             messages.success(request, f"{user.username}, Successful Registration")
             return HttpResponseRedirect(reverse("user:login"))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
+
     else:
         form = UserRegistrationForm()
-    return render(request, "users/registration.html")
+
+    return render(request, "users/registration.html", {"form": form})
 
 
 @login_required
@@ -48,6 +59,10 @@ def profile(request):
             form.save()
             messages.success(request, " Profile was changed ")
             return HttpResponseRedirect(reverse("user:profile"))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
     else:
         form = ProfileForm(instance=request.user)
 
