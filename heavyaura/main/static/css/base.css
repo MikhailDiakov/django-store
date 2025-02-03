@@ -703,7 +703,7 @@ input:focus {
 .orderss {
   margin-left: 70px;
   width: 520px;
-  max-height: 52vh;
+  max-height: 45vh;
   overflow-y: auto;
 }
 

@@ -19,9 +19,15 @@ class OrderCreateForm(forms.ModelForm):
         self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
         if self.request.user.is_authenticated:
+            user = self.request.user
             self.initial["first_name"] = self.request.user.first_name
             self.initial["last_name"] = self.request.user.last_name
             self.initial["email"] = self.request.user.email
+            latest_order = Order.objects.filter(user=user).order_by("-created").first()
+            if latest_order:
+                self.initial["city"] = latest_order.city
+                self.initial["address"] = latest_order.address
+                self.initial["postal_code"] = latest_order.postal_code
 
     def save(self, commit=True):
         order = super().save(commit=False)
