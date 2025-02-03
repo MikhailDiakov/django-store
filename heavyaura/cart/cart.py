@@ -6,6 +6,7 @@ from django.conf import settings
 import redis
 from main.models import Product
 from datetime import timedelta
+from .tasks import clear_cart
 
 
 class Cart:
@@ -87,7 +88,7 @@ class Cart:
         return sum(item["quantity"] for item in self.cart.values())
 
     def clear(self):
-        self.redis_client.delete(self.cart_key)
+        clear_cart.apply_async((self.cart_key,))
 
     def get_total_price(self):
         total = sum(

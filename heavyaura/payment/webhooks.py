@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import stripe.error
 from orders.models import Order
-from main.models import Product
+from .tasks import process_payment_status
 
 
 @csrf_exempt
@@ -28,7 +28,7 @@ def stripe_webhook(request):
                 order = Order.objects.get(id=session.client_reference_id)
             except Order.DoesNotExist:
                 return HttpResponse(status=404)
-            order.paid = True
-            order.stripe_id = session.payment_intent
-            order.save()
+
+            process_payment_status.apply_async((order.id, session.payment_intent))
+
     return HttpResponse(status=200)
