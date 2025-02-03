@@ -145,3 +145,18 @@ STRIPE_API_VERSION = "2022-08-01"
 STRIPE_WEBHOOK_SECRET = (
     "whsec_205dce8a23a65a4654ad607f8dcd184c68be758879eeda6afde803804eeb752b"
 )
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+CART_SESSION_ID = "cart"

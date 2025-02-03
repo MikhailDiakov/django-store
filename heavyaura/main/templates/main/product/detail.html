@@ -5,9 +5,13 @@
 {% block content %}
 <div class="detail-product d-flex">
   <div class="detail-img">
-      {% for image in product.images.all %}
-          <img class="detail-image" src="{{ image.image.url }}" alt="" style="display: none;" data-index="{{ forloop.counter0 }}">
-      {% endfor %}
+    {% if product.images.all %}
+        {% for image in product.images.all %}
+            <img class="detail-image" src="{{ image.image.url }}" alt="" style="display: none;" data-index="{{ forloop.counter0 }}">
+        {% endfor %}
+    {% else %}
+        <img class="detail-image" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" alt="" data-index="0">
+    {% endif %}
       <div class="image-nav">
           <button class="prev-btn">&lsaquo;</button>
           <button class="next-btn">&rsaquo;</button>

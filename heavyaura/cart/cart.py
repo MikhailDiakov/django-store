@@ -1,15 +1,37 @@
+import json
+import random
+import string
 from decimal import Decimal, ROUND_DOWN
 from django.conf import settings
+import redis
 from main.models import Product
+from datetime import timedelta
 
 
 class Cart:
     def __init__(self, request):
         self.session = request.session
-        cart = self.session.get(settings.CART_SESSION_ID)
-        if not cart:
-            cart = self.session[settings.CART_SESSION_ID] = {}
-        self.cart = cart
+        self.redis_client = redis.StrictRedis.from_url(
+            settings.CACHES["default"]["LOCATION"]
+        )
+        if request.user.is_authenticated:
+            self.cart_key = f"cart_{request.user.id}"
+            self.cart_ttl = timedelta(days=7)
+        else:
+            if "cart_token" not in self.session:
+                self.session["cart_token"] = "".join(
+                    random.choices(string.ascii_letters + string.digits, k=16)
+                )
+            self.cart_key = f"cart_{self.session['cart_token']}"
+            self.cart_ttl = timedelta(minutes=30)
+
+        self.cart = self.redis_client.get(self.cart_key)
+        if not self.cart:
+            self.cart = {}
+        else:
+            self.cart = json.loads(self.cart)
+
+        self.redis_client.expire(self.cart_key, self.cart_ttl)
 
     def add(self, product, quantity=1, override_quantity=False):
         product_id = str(product.id)
@@ -22,7 +44,8 @@ class Cart:
         self.save()
 
     def save(self):
-        self.session.modified = True
+        self.redis_client.set(self.cart_key, json.dumps(self.cart))
+        self.redis_client.expire(self.cart_key, self.cart_ttl)
 
     def remove(self, product):
         product_id = str(product.id)
@@ -64,7 +87,7 @@ class Cart:
         return sum(item["quantity"] for item in self.cart.values())
 
     def clear(self):
-        del self.session[settings.CART_SESSION_ID]
+        self.redis_client.delete(self.cart_key)
 
     def get_total_price(self):
         total = sum(
