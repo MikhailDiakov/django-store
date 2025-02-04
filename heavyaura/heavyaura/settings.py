@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-2tdp!iz*_prc9auha-zu%)im+#al*!cimv^73kc7n)*uo=dfmx"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -82,11 +87,11 @@ WSGI_APPLICATION = "heavyaura.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "heavyaura",
-        "USER": "ken",
-        "PASSWORD": "ken",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
 
@@ -125,26 +130,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
+STATIC_ROOT = os.path.join(BASE_DIR, "/app/staticfiles")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 CART_SESSION_ID = "card"
 
 AUTH_USER_MODEL = "users.User"
 
-STRIPE_PUBLISHABLE_KEY = "pk_test_51QnJRMHGvyzyjqm4IlR1FrPfT83XIVBe9E4uiAbZXij1UBwyGB2MtGoZaKinOi9ncSzqgo2ygMRNYTvcJq58f8d900AD1q7wUW"
-STRIPE_SECRET_KEY = "sk_test_51QnJRMHGvyzyjqm43VZCVmbPb0gDi9fh1n3LKoo2V1e8bW5Fhx61PThcofaQSCAhInMLGTFvLL9xStsq50Nwyg6T00ihEeQ9kl"
-STRIPE_API_VERSION = "2022-08-01"
-STRIPE_WEBHOOK_SECRET = (
-    "whsec_205dce8a23a65a4654ad607f8dcd184c68be758879eeda6afde803804eeb752b"
-)
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_API_VERSION = os.environ.get("STRIPE_API_VERSION")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
@@ -152,16 +155,16 @@ SESSION_CACHE_ALIAS = "default"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
 }
 
-CART_SESSION_ID = "cart"
+CART_SESSION_ID = os.environ.get("CART_SESSION_ID", "cart")
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
