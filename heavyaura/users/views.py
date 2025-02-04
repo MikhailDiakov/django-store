@@ -2,10 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib import auth, messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from .forms import UserLoginForm, UserRegistrationForm, ProfileForm
+from .forms import (
+    UserLoginForm,
+    UserRegistrationForm,
+    ProfileForm,
+    UserPasswordChangeForm,
+)
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from orders.models import Order, OrderItem
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView
 
 
 def login(request):
@@ -79,3 +86,9 @@ def profile(request):
 def logout(request):
     auth.logout(request)
     return redirect(reverse("main:product_list"))
+
+
+class UserPasswordChange(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy("users:password_change_done")
+    template_name = "users/password_change_form.html"
