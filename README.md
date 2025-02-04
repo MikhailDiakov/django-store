@@ -19,6 +19,7 @@
 
 3. **Start the application:**
    ```bash
+   cd heavyaura/
    docker-compose up
    ```
    - Open [http://localhost](http://localhost) in your browser.
