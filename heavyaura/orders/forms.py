@@ -31,7 +31,10 @@ class OrderCreateForm(forms.ModelForm):
 
     def save(self, commit=True):
         order = super().save(commit=False)
-        order.user = self.request.user
+        if self.request.user.is_authenticated:
+            order.user = self.request.user
+        else:
+            order.user = None
         if commit:
             order.save()
         return order
