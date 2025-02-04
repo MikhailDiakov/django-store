@@ -1,0 +1,125 @@
+version: "3.8"
+x-environment-defaults: &environment-defaults
+  DEBUG: "True"
+  DB_NAME: "${DB_NAME}"
+  DB_USER: "${DB_USER}"
+  DB_PASSWORD: "${DB_PASSWORD}"
+  DB_HOST: "${DB_HOST}"
+  DB_PORT: 5432
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+  SECRET_KEY: "${SECRET_KEY}"
+  STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
+  STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+  STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET}"
+
+services:
+  # Django application
+  heavyaura:
+    build:
+      context: ./heavyaura
+    volumes:
+      - ./heavyaura:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - "8000:8000"
+    networks:
+      - heavyaura-network
+    depends_on:
+      - postgres-db
+    environment:
+      <<: *environment-defaults
+    restart: on-failure:5
+    # healthcheck:
+    #   test: curl -f http://localhost:8000/api/health || exit 1
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
+
+  # Redis for Celery and caching
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - heavyaura-network
+
+  # PostgreSQL database
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - heavyaura-network
+
+  # Celery worker
+  celery:
+    build:
+      context: ./heavyaura
+    command: celery -A heavyaura worker --loglevel=info
+    volumes:
+      - ./heavyaura:/app
+    depends_on:
+      - redis
+      - postgres-db
+    networks:
+      - heavyaura-network
+    environment:
+      <<: *environment-defaults
+
+  # Celery Beat (for periodic tasks)
+  celery-beat:
+    build:
+      context: ./heavyaura
+    command: celery -A heavyaura beat --loglevel=info
+    volumes:
+      - ./heavyaura:/app
+    depends_on:
+      - celery
+      - redis
+      - postgres-db
+    networks:
+      - heavyaura-network
+    environment:
+      <<: *environment-defaults
+
+  # Nginx to reverse proxy requests to Django app
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/staticfiles
+    ports:
+      - "80:80"
+    networks:
+      - heavyaura-network
+    depends_on:
+      - heavyaura
+
+  stripe-listener:
+    image: stripe/stripe-cli
+    command: >
+      listen --forward-to heavyaura:8000/payment/webhook/
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_DEVICE_NAME=stripe-listener
+    networks:
+      - heavyaura-network
+    depends_on:
+      - heavyaura
+
+volumes:
+  pg_data:
+  static_volume:
+
+networks:
+  heavyaura-network:
+    driver: bridge
