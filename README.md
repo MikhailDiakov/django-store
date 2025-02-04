@@ -6,7 +6,7 @@
 
    ```bash
    git clone LINK
-   cd django-store
+   cd django-store/heavyaura/
    ```
 
 2. **Create and configure the `.env` file:**
@@ -19,7 +19,6 @@
 
 3. **Start the application:**
    ```bash
-   cd heavyaura/
    docker-compose up
    ```
    - Open [http://localhost](http://localhost) in your browser.
