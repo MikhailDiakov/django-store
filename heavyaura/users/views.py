@@ -12,7 +12,10 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from orders.models import Order, OrderItem
 from django.urls import reverse_lazy
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView, PasswordResetView
+from django.contrib.auth import get_user_model
+from .tasks import send_reset_email
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def login(request):
@@ -92,3 +95,21 @@ class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm
     success_url = reverse_lazy("users:password_change_done")
     template_name = "users/password_change_form.html"
+
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+
+        email = form.cleaned_data["email"]
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(self.get_success_url())
+
+        protocol = "https" if self.request.is_secure() else "http"
+        domain = self.request.get_host()
+
+        send_reset_email.delay(user.id, domain, protocol)
+        return HttpResponseRedirect(self.get_success_url())
