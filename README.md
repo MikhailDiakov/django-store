@@ -6,7 +6,7 @@
 
    ```bash
    git clone LINK
-   cd django-store/heavyaura/
+   cd django-store/
    ```
 
 2. **Create and configure the `.env` file:**

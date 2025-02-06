@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.urls import reverse
 from decimal import Decimal
 from orders.models import Order
 from django.conf import settings
 import stripe
+from main.logs_service import log_to_kafka
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -39,14 +40,33 @@ def payment_process(request):
                 }
             )
         session = stripe.checkout.Session.create(**session_data)
-        return redirect(session.url, code=303)
+        try:
+            session = stripe.checkout.Session.create(**session_data)
+
+            log_to_kafka(
+                "Payment session created",
+                {
+                    "order_id": order.id,
+                    "client_reference_id": order.id,
+                    "session_id": session.id,
+                },
+            )
+            return redirect(session.url, code=303)
+        except Exception as e:
+            log_to_kafka(
+                "Payment session creation failed",
+                {"order_id": order.id, "error": str(e)},
+            )
+            return HttpResponse("Error creating payment session", status=500)
     else:
         return render(request, "payment/process.html", locals())
 
 
 def payment_completed(request):
+    log_to_kafka("Payment completed", {"status": "success"})
     return render(request, "payment/completed.html")
 
 
 def payment_canceled(request):
+    log_to_kafka("Payment canceled", {"status": "canceled"})
     return render(request, "payment/canceled.html")
