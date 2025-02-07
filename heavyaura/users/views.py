@@ -98,7 +98,9 @@ def profile(request):
 
 
 def logout(request):
+    username = request.user.username if request.user.is_authenticated else "Anonymous"
     auth.logout(request)
+    log_to_kafka("User logged out", {"username": username})
     return redirect(reverse("main:product_list"))
 
 

@@ -37,16 +37,16 @@ services:
       - heavyaura-network
     depends_on:
       - postgres-db
-      # - kafka
+      - kafka
     environment:
       <<: *environment-defaults
     restart: on-failure:5
-    # healthcheck:
-    #   test: curl -f http://localhost|| exit 1
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 10s
+    healthcheck:
+      test: curl -f http://localhost|| exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # Redis for Celery and caching
   redis:
@@ -173,7 +173,7 @@ services:
     depends_on:
       - kafka
       - zookeeper
-      # - cassandra
+      - cassandra
     environment:
       KAFKA_BROKER: "kafka:9092"
       CASSANDRA_HOST: "cassandra"
