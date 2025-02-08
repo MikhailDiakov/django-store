@@ -119,7 +119,7 @@ def test_product_list_pagination(client, category):
 
 
 @pytest.mark.django_db
-def test_category_contains_only_its_products(category):
+def test_category_contains_only_its_products(client, category, products):
     category2 = Category.objects.create(
         name="Another Category", slug="another-category"
     )
@@ -141,8 +141,29 @@ def test_category_contains_only_its_products(category):
         ),
     ]
 
-    category_products = Product.objects.filter(category=category)
-    assert all(product.category == category for product in category_products)
+    response = client.get(
+        reverse("main:product_list_by_category", args=[category.slug])
+    )
+
+    assert response.status_code == 200
+    assert "products" in response.context
+
+    for product in response.context["products"]:
+        assert product.category == category
 
     for product in other_products:
-        assert product not in category_products
+        assert product not in response.context["products"]
+
+
+@pytest.mark.django_db
+def test_product_detail_not_found(client):
+    response = client.get(reverse("main:product_detail", args=["non-existent-product"]))
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_category_not_found(client):
+    response = client.get(
+        reverse("main:product_list_by_category", args=["invalid-category"])
+    )
+    assert response.status_code == 404
